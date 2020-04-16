@@ -69,11 +69,10 @@ func (b *Builder) buildns(ns Namespace) error {
 			servername := args[0]
 			old := args[1]
 			spec := ""
-			_ = spec // spec isn't supported yet
 			if len(args) == 3 {
 				spec = args[2]
 			}
-			err = ns.Mount(servername, old, int(c.flag))
+			err = ns.Mount(servername, old, spec, int(c.flag))
 		case UNMOUNT:
 			new, old := "", ""
 			if len(args) == 2 {

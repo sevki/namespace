@@ -56,12 +56,12 @@ func (n *namespace) Import(host string, remotepath string, mountpoint string, f 
 
 // Mount opens a fd with the server name and mounts the open fd to
 // old
-func (n *namespace) Mount(servername string, old string, flag int) error {
+func (n *namespace) Mount(servername string, old, spec string, flag int) error {
 	fd, err := syscall.Open(servername, syscall.O_RDWR)
 	if err != nil {
 		return fmt.Errorf("open failed: %v", err)
 	}
-	return syscall.Mount(fd, -1, old, flag, "")
+	return syscall.Mount(fd, -1, old, flag, spec)
 }
 
 func errstr() string {

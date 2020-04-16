@@ -2,6 +2,7 @@ package namespace
 
 import (
 	"os"
+	"path"
 	"testing"
 	"time"
 
@@ -10,7 +11,7 @@ import (
 )
 
 type arg struct {
-	call int
+	call syzcall
 	flag int
 	args []string
 }
@@ -58,7 +59,7 @@ func TestOPS_NewNS(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			mc := minimock.NewController(t)
 			defer mc.Wait(time.Second)
-
+			wd, _ := os.Getwd()
 			receiver := tt.init(mc)
 			calls := make(chan cmd)
 
@@ -68,10 +69,11 @@ func TestOPS_NewNS(t *testing.T) {
 					calls <- call
 				}
 			}(receiver)
-			err := receiver.NewNS(&mock)
-			if err != nil {
-				panic(err)
+			b := &Builder{
+				dir:  path.Join(wd, "testdata"),
+				open: open1,
 			}
+			err := b.buildns(&mock)
 
 			mc.Finish()
 			if tt.wantErr {
@@ -99,7 +101,7 @@ func (m *mockNS) Bind(new string, old string, option int) error {
 	}, <-m.calls)
 }
 
-func (m *mockNS) Mount(servername string, old string, option int) error {
+func (m *mockNS) Mount(servername, old, spec string, option int) error {
 	return checkArgs(m.t, arg{
 		args: []string{servername, old},
 		flag: option,

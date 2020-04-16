@@ -47,6 +47,7 @@ const (
 	// MOUNT is the plan9 MOUNT syscall. https://9p.io/magic/man2html/2/bind
 	MOUNT syzcall = 46
 	// RFORK is the plan9 rfork() syscall. https://9p.io/magic/man2html/2/fork
+	// used to perform clear
 	RFORK syzcall = 19
 	// IMPORT is not a syscall. https://9p.io/magic/man2html/4/import
 	IMPORT syzcall = 7
@@ -70,7 +71,7 @@ type Namespace interface {
 	// Bind binds new on old.
 	Bind(new, old string, flag int) error
 	// Mount mounts servename on old.
-	Mount(servername, old string, flag int) error
+	Mount(servername, old, spec string, flag int) error
 	// Unmount unmounts new from old, or everything mounted on old if new is missing.
 	Unmount(new, old string) error
 	// Clear clears the name space with rfork(RFCNAMEG).
