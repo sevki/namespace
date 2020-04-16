@@ -1,3 +1,5 @@
+// +build plan9 harvey !linux !darwin
+
 package namespace
 
 import (

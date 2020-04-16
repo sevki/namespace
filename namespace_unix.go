@@ -1,5 +1,8 @@
+// +build !plan9 !harvey linux darwin
+
 package namespace
 
+// DefaultNamespace is the default namespace
 var DefaultNamespace = &unixnamespace{}
 
 type unixnamespace struct{}
