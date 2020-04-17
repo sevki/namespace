@@ -2,6 +2,7 @@ package namespace
 
 import (
 	"fmt"
+	"os"
 )
 
 type syzcall int
@@ -96,26 +97,22 @@ func (c cmd) String() string { return fmt.Sprintf("%s(%v, %d)", c.syscall, c.arg
 // copies the old environment, erases the current name space,
 // sets the environment variables user and home, and interprets the commands in nsfile.
 // The format of nsfile is described in namespace(6).
-func NewNS(nsfile string) error {
-	var ns Namespace
-	ns = DefaultNamespace
-	ns.Clear()
-	r, err := NewBuilder()
-	if err != nil {
-		return err
-	}
-	if err := r.Parse(nsfile); err != nil {
-		return err
-	}
-	return r.buildns(ns)
-}
+func NewNS(nsfile string, user string) error { return buildns(nsfile, user, true) }
 
 // AddNS also interprets and executes the commands in nsfile.
 // Unlike newns it applies the command to the current name
 // space rather than starting from scratch.
-func AddNS(nsfile string) error {
+func AddNS(nsfile string, user string) error { return buildns(nsfile, user, false) }
+
+func buildns(nsfile, user string, new bool) error {
+	if err := os.Setenv("user", user); err != nil {
+		return err
+	}
 	var ns Namespace
 	ns = DefaultNamespace
+	if new {
+		ns.Clear()
+	}
 	r, err := NewBuilder()
 	if err != nil {
 		return err
